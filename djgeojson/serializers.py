@@ -175,6 +175,8 @@ class Serializer(PythonSerializer):
                 # if the geometry is None (or NULL in DB)
                 if value is not None:
                     geometry = self._handle_geom(GEOSGeometry(value))
+                    if geometry.srid == None:
+                        geometry.srid = GEOJSON_DEFAULT_SRID
                 else:
                     geometry = None
             # if the geometry couldn't be parsed, we can't generate valid geojson
