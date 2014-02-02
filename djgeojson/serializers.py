@@ -155,9 +155,9 @@ class Serializer(PythonSerializer):
         if simplify is not None:
             geometry = geometry.simplify(tolerance=simplify, preserve_topology=True)
         # Optional geometry reprojection
-        #if self.srid != geometry.srid:
-            #logger.warn('%s != '%(self.srid, geometry.srid))
-            #geometry.transform(self.srid)
+        if self.srid != geometry.srid:
+            logger.warn('%s != '%(self.srid, geometry.srid))
+            geometry.transform(self.srid)
         return geometry
 
     def handle_field(self, obj, field_name):
@@ -175,9 +175,10 @@ class Serializer(PythonSerializer):
             try:
                 # if the geometry is None (or NULL in DB)
                 if value is not None:
-                    geometry = self._handle_geom(GEOSGeometry(value))
+                    geometry = GEOSGeometry(value)
                     if geometry.srid == None:
                         geometry.srid = GEOJSON_DEFAULT_SRID
+                    geometry = self._handle_geom()
                 else:
                     geometry = None
             # if the geometry couldn't be parsed, we can't generate valid geojson
